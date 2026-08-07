@@ -10,7 +10,7 @@ import {
     subscribePreviewLogo,
 } from '@/utils/live-branding-store';
 import { isPreviewMode } from '@/utils/is-preview-mode';
-import { getAppName, LOGO_CANDIDATES } from '../../../utils/branding';
+import { getAppName, getLogoCandidates } from '../../../utils/branding';
 
 type TLogoMarkProps = {
     height?: number;
@@ -24,11 +24,13 @@ export const LogoMark = ({ height = 32 }: TLogoMarkProps) => {
     useEffect(() => subscribePreviewLogo(setPreviewLogo), []);
     useEffect(() => subscribePreviewAppName(setPreviewAppName), []);
 
-    // Preview data URL wins, then the deploy-time public/logo.<ext> candidates. The static
-    // preview build ships no public/logo.* (the live App Builder logo arrives as a data URL),
-    // so skip the file candidates there to avoid pointless 404 probes — fall back to the badge.
+    // Preview data URL wins, then the deploy-time public/logo.<ext> path recorded in
+    // brand.config.json platform.logo_path (getLogoCandidates — nothing when the partner
+    // set no logo, so no wasted 404 probes). The static preview build ships no
+    // public/logo.* (the live App Builder logo arrives as a data URL), so skip the file
+    // candidates there too — fall back to the badge.
     const candidates = useMemo(() => {
-        const fileFallbacks = isPreviewMode() ? [] : LOGO_CANDIDATES;
+        const fileFallbacks = isPreviewMode() ? [] : getLogoCandidates();
         return previewLogo ? [previewLogo, ...fileFallbacks] : [...fileFallbacks];
     }, [previewLogo]);
 

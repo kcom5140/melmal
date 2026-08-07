@@ -105,6 +105,7 @@
                 "options": "options/",
                 "derivatives": "derivatives/"
             }
-        }
+        },
+        "logo_path": "/logo.png"
     }
 }
